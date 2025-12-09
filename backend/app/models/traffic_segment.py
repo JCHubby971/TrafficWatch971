@@ -1,8 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from app.db.session import engine
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from app.db.base import Base
 
 class TrafficSegment(Base):
     __tablename__ = "traffic_segments"
