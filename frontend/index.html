@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>TrafficWatch971 - Dashboard</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #0f172a; color: #e5e7eb; }
+    h1 { margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #1f2937; text-align: left; }
+    th { background: #111827; }
+    tr:nth-child(even) { background: #020617; }
+    .badge-ok { color: #22c55e; font-weight: bold; }
+    .badge-warn { color: #facc15; font-weight: bold; }
+    .badge-bad { color: #ef4444; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>TrafficWatch971 - Vue temps réel</h1>
+  <p id="status">Chargement...</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Segment</th>
+        <th>Vitesse (km/h)</th>
+        <th>Congestion</th>
+        <th>Horodatage</th>
+      </tr>
+    </thead>
+    <tbody id="traffic-body">
+    </tbody>
+  </table>
+
+  <script>
+    const API_URL = "http://localhost:8000/traffic/latest";
+
+    function congestionBadge(level) {
+      if (level < 30) return `<span class="badge-ok">${level}% (fluide)</span>`;
+      if (level < 70) return `<span class="badge-warn">${level}% (chargé)</span>`;
+      return `<span class="badge-bad">${level}% (bouchon)</span>`;
+    }
+
+    async function fetchTraffic() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        document.getElementById("status").textContent =
+          `Dernière mise à jour : ${new Date().toLocaleTimeString()}`;
+
+        const tbody = document.getElementById("traffic-body");
+        tbody.innerHTML = "";
+
+        data.forEach(item => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${item.segment_name}</td>
+            <td>${item.avg_speed_kmh.toFixed(1)}</td>
+            <td>${congestionBadge(item.congestion_level)}</td>
+            <td>${new Date(item.timestamp).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status").textContent =
+          "Erreur lors du chargement des données.";
+      }
+    }
+
+    fetchTraffic();
+    setInterval(fetchTraffic, 15000); // refresh toutes les 15s
+  </script>
+</body>
+</html>
