@@ -1,76 +1,82 @@
-# # 🚦 TrafficWatch971 — Phase 1 (MVP)
+# 🚦 TrafficWatch971 — Plateforme d’analyse du trafic routier en Guadeloupe
 
-**Plateforme d’analyse du trafic routier en Guadeloupe — Version DevOps/Cloud (Phase 1)**
+**Projet DevOps/Cloud — MVP + Déploiement VPS + Préparation AWS Terraform**
 
-TrafficWatch971 est un projet personnel visant à construire une solution de monitoring du trafic routier en Guadeloupe, avec ingestion de données, API, simulateur, visualisation et futur déploiement Cloud + Kubernetes + Terraform.
+TrafficWatch971 est une plateforme qui collecte, simule et expose des données de trafic routier en Guadeloupe.  
+Le projet suit une montée en puissance progressive : MVP en local, déploiement sur VPS OVH, puis migration AWS avec Terraform, streaming, et Kubernetes.
 
-Ce dépôt correspond à la **Phase 1 : MVP local avec Docker Compose**.
-
----
-
-## **Fonctionnalités (Phase 1)**
-
-* Simulateur de trafic capable de générer :
-
-  * vitesse moyenne
-  * congestion
-  * timestamp
-* API FastAPI pour récupérer les mesures les plus récentes
-* Base PostgreSQL accessible en local
-* Architecture containerisée (Docker Compose)
-* Base solide pour évolution future :
-
-  * AWS (RDS, Lambda, Kinesis)
-  * Terraform IaC
-  * Kubernetes / EKS
-  * Monitoring (Grafana, Prometheus)
+Ce dépôt correspond à la **Phase 1 & Phase 2** :
+- Phase 1 : MVP local avec Docker Compose  
+- Phase 2 : Déploiement sur VPS OVH (prod actuelle)
 
 ---
 
-## 🏗️ **Architecture Phase 1**
+## ✅ Fonctionnalités actuelles
+
+### Phase 1 – MVP (local)
+- Simulateur Python générant :
+  - vitesse moyenne (km/h)
+  - niveau de congestion (%)
+  - timestamp
+- API FastAPI exposant `/traffic/latest` + `/health`
+- Base de données PostgreSQL
+- Architecture containerisée (Docker Compose)
+
+### Phase 2 – Déploiement VPS OVH (prod)
+- VPS Ubuntu 22.04
+- Docker + Docker Compose installés
+- Stack déployée automatiquement via `docker compose up -d`
+- Dashboard frontend **accessible publiquement**
+- Simulation + backend + DB en production
+
+---
+
+## 🏗️ Architecture Phase 1
 
 ```
-Simulator → PostgreSQL DB ← FastAPI Backend → (frontend: phase 2)
+
+Simulator → PostgreSQL DB ← FastAPI Backend ← Frontend (React)
+
 ```
 
 ---
 
-## 📂 **Arborescence**
+## 📂 Arborescence du projet
 
 ```
+
 TrafficWatch971/
-  backend/
-  simulator/
-  infra/
-```
+backend/         → API FastAPI
+simulator/       → Générateur de données
+frontend/        → Dashboard React
+infra/
+├─ docker-compose.yml
+└─ terraform/ → Phase 3 : infra AWS (VPC déjà décrite)
+
+````
 
 ---
 
-## 🚀 **Lancer le projet**
+## 🚀 Lancer le projet localement
 
 Depuis le dossier `infra/` :
 
 ```bash
 docker compose up --build
-```
+````
 
-Quand tout est lancé :
+### Endpoints API
 
-### ▶ API :
+* [http://localhost:8000/traffic/latest](http://localhost:8000/traffic/latest)
+* [http://localhost:8000/health](http://localhost:8000/health)
 
-[http://localhost:8000/traffic/latest](http://localhost:8000/traffic/latest)
-[http://localhost:8000/health](http://localhost:8000/health)
+### Base PostgreSQL (local)
 
-### ▶ Base PostgreSQL :
-
-localhost:5432
-user: traffic
-pass: traffic
-db: trafficdb
-
-### ▶ Simulateur :
-
-Génère des données toutes les 60 secondes.
+* host: localhost
+* port: 5432
+* user: traffic
+* password: traffic
+* database: trafficdb
 
 ---
 
@@ -89,50 +95,56 @@ Génère des données toutes les 60 secondes.
 
 ---
 
-## 🧩 **Technologies utilisées**
+## 🛠️ Technologies utilisées
 
 * FastAPI
 * PostgreSQL
-* Python
 * Docker & Docker Compose
 * SQLAlchemy
-* Pydantic
+* Python
+* React (frontend)
+* Terraform (Phase 3+)
+* AWS (à venir)
 
 ---
 
-## 🛣️ **Roadmap**
+## 🛣️ Roadmap du projet
 
-### ✔ **Phase 1 – MVP local Docker (You are here)**
+### ✔ **Phase 1 — MVP local Docker (terminée)**
 
 * API
 * Simulation
 * DB
 * Docker Compose
 
-### 🔜 **Phase 2 – Cloud & IaC**
+### ✔ **Phase 2 — Déploiement VPS OVH (terminée)**
 
-* Terraform → AWS
-* Déploiement API sur ECS ou Lambda
-* RDS PostgreSQL
-* CloudWatch + SNS
+* Installation Docker sur VPS
+* Déploiement complet
+* Dashboard public en temps réel
 
-### 🔜 **Phase 3 – Streaming & Microservices**
+### 🔜 **Phase 3 — Cloud & IaC (AWS dès activation de mon compte)**
 
-* AWS Kinesis
-* Services séparés (API / ingestion / analytics)
-* CI/CD complet GitHub Actions
+* Terraform : VPC, subnets, routage (déjà écrit dans `infra/terraform`)
+* Déploiement API (ECS Fargate)
+* Base PostgreSQL → RDS
+* Logs + Monitoring → CloudWatch
 
-### 🔜 **Phase 4 – Kubernetes (EKS)**
+### 🔜 Phase 4 — Streaming & Microservices
+
+* AWS Kinesis (ingestion)
+* Microservices ingestion / analytics
+* CI/CD GitHub Actions
+
+### 🔜 Phase 5 — Kubernetes (EKS)
 
 * Manifests K8s
 * Autoscaling
-* Prometheus + Grafana
+* Monitoring Prometheus + Grafana
 
 ---
 
-## 👤 **Auteur**
+## 👤 Auteur
 
 **Jérémy Champigny**
 *(DevOps/Cloud Engineer in the making)*
-
----
