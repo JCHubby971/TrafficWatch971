@@ -1,0 +1,37 @@
+name: Deploy TrafficWatch971 to OVH VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          VPS_HOST_IP: ${{ secrets.VPS_HOST_IP }}
+        run: |
+          set -euo pipefail
+          ssh ubuntu@"$VPS_HOST_IP" <<'EOF'
+            set -euo pipefail
+            cd ~/TrafficWatch971/infra
+            docker compose pull || true
+            docker compose up -d --build
+          EOF
