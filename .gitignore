@@ -15,5 +15,5 @@ frontend/.env
 # Docker artefacts
 *.log
 
-Planning.txt
-Projet DevOpsCloud TrafficWatch.txt
+Planning.md
+Projet DevOpsCloud TrafficWatch.md
